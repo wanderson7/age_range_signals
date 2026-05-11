@@ -1,3 +1,14 @@
+## 0.5.2
+
+* **iOS**: `initialize()` now accepts an optional `useEligibilityGate` parameter (defaults to `true` for backward compatibility)
+  * When `true` (default), preserves the current behavior of short-circuiting as `unknown` if `isEligibleForAgeFeatures` returns `false`
+  * When `false`, calls `requestAgeRange` unconditionally — required for apps that must show the system prompt on fresh installs / sandbox accounts, where `isEligibleForAgeFeatures` returns `false` until the prompt is accepted at least once (chicken-and-egg)
+  * Aligns with Apple's docs: "In macOS, isEligibleForAgeFeatures returns false... However, you can still call requestAgeRange in macOS to get the declared age range." Apple's own "Request an age range" samples invoke `requestAgeRange` directly without an eligibility check
+* **iOS**: Expanded `AgeRangeDeclaration` mapping to cover all 8 cases introduced in iOS 26.2+
+  * Previously only `selfDeclared` and `guardianDeclared` were exposed; the remaining six (`checkedByOtherMethod`, `governmentIDChecked`, `paymentChecked`, and their `guardian*` counterparts) now round-trip to Dart through the existing `AgeDeclarationSource` enum
+  * Critical for compliance with jurisdictions that distinguish self-declared age from age verified against external sources (e.g., Brazil's Lei 15.211/2025 — ECA Digital)
+  * Gated with `@available(iOS 26.2, *)`; iOS 26.0 / 26.1 deployment targets are unaffected
+
 ## 0.5.1
 
 * **Android**: Updated `com.google.android.play:age-signals` to version 0.0.3 (#25, thanks to @nathanael540)
