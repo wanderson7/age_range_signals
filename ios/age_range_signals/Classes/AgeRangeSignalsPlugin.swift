@@ -7,6 +7,7 @@ import DeclaredAgeRange
 
 public class AgeRangeSignalsPlugin: NSObject, FlutterPlugin {
     private var ageGates: [Int] = []
+    private var useEligibilityGate: Bool = true
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "age_range_signals", binaryMessenger: registrar.messenger())
@@ -29,6 +30,9 @@ public class AgeRangeSignalsPlugin: NSObject, FlutterPlugin {
         if let args = call.arguments as? [String: Any] {
             if let gates = args["ageGates"] as? [Int] {
                 ageGates = gates.sorted()
+            }
+            if let useGate = args["useEligibilityGate"] as? Bool {
+                useEligibilityGate = useGate
             }
             // Note: useMockData and mockData are ignored on iOS
             // Apple provides no official testing utilities for DeclaredAgeRange API
@@ -80,8 +84,9 @@ public class AgeRangeSignalsPlugin: NSObject, FlutterPlugin {
 
         Task { @MainActor in
             // Check if user is eligible for age features (iOS 26.2+)
-            // Returns unknown status if user is outside applicable region
-            if #available(iOS 26.2, *) {
+            // Returns unknown status if user is outside applicable region.
+            // Opt-out via useEligibilityGate: false at initialize().
+            if useEligibilityGate, #available(iOS 26.2, *) {
                 do {
                     let isEligible = try await AgeRangeService.shared.isEligibleForAgeFeatures
                     if !isEligible {

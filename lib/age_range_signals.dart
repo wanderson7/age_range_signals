@@ -62,6 +62,25 @@ class AgeRangeSignals {
   /// [useMockData] and [mockData] parameters are ignored, and the real API is
   /// always used. iOS testing requires real iOS 26.2+ devices.
   ///
+  /// **iOS eligibility gate**
+  ///
+  /// [useEligibilityGate] (iOS only, defaults to true for backward compatibility)
+  /// controls whether the plugin calls `isEligibleForAgeFeatures` before
+  /// `requestAgeRange` and short-circuits with `unknown` when eligibility is
+  /// false. Set it to false to call `requestAgeRange` unconditionally.
+  ///
+  /// You typically want `useEligibilityGate: false` when:
+  ///   - Your app must show the system age range prompt even on fresh installs
+  ///     or sandbox accounts (where `isEligibleForAgeFeatures` returns false
+  ///     until the prompt is accepted at least once — chicken-and-egg state),
+  ///   - Or when targeting non-regulated regions where Apple still allows
+  ///     calling `requestAgeRange` (per Apple's docs: "In macOS,
+  ///     isEligibleForAgeFeatures returns false... However, you can still
+  ///     call requestAgeRange in macOS to get the declared age range.").
+  ///
+  /// Apple's own "Request an age range" samples invoke `requestAgeRange`
+  /// directly, without an eligibility check.
+  ///
   /// Should be called before [checkAgeSignals].
   ///
   /// Example:
@@ -86,11 +105,13 @@ class AgeRangeSignals {
     List<int>? ageGates,
     bool useMockData = false,
     AgeSignalsMockData? mockData,
+    bool useEligibilityGate = true,
   }) {
     return AgeRangeSignalsPlatform.instance.initialize(
       ageGates: ageGates,
       useMockData: useMockData,
       mockData: mockData,
+      useEligibilityGate: useEligibilityGate,
     );
   }
 

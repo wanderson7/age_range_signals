@@ -17,12 +17,14 @@ class MethodChannelAgeRangeSignals extends AgeRangeSignalsPlatform {
     List<int>? ageGates,
     bool useMockData = false,
     AgeSignalsMockData? mockData,
+    bool useEligibilityGate = true,
   }) async {
     try {
       await methodChannel.invokeMethod<void>('initialize', {
         'ageGates': ageGates,
         'useMockData': useMockData,
         'mockData': mockData?.toMap(),
+        'useEligibilityGate': useEligibilityGate,
       });
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);

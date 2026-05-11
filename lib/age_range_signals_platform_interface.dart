@@ -35,11 +35,22 @@ abstract class AgeRangeSignalsPlatform extends PlatformInterface {
   /// When [useMockData] is true, you can optionally provide [mockData] to
   /// customize the mock response. If not provided, default mock data will be used.
   ///
+  /// [useEligibilityGate] (iOS only, defaults to true) controls whether the
+  /// plugin calls `isEligibleForAgeFeatures` before `requestAgeRange` and
+  /// returns `unknown` when eligibility is false. Set this to false to call
+  /// `requestAgeRange` unconditionally — required for apps that need the
+  /// system prompt to appear on fresh installs / sandbox accounts where
+  /// `isEligibleForAgeFeatures` returns false until the prompt is accepted
+  /// at least once (chicken-and-egg). Apple's own examples in the "Request
+  /// an age range" documentation invoke `requestAgeRange` directly without
+  /// an eligibility check.
+  ///
   /// Should be called before [checkAgeSignals].
   Future<void> initialize({
     List<int>? ageGates,
     bool useMockData = false,
     AgeSignalsMockData? mockData,
+    bool useEligibilityGate = true,
   }) {
     throw UnimplementedError('initialize() has not been implemented.');
   }
