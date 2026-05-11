@@ -169,11 +169,35 @@ enum AgeSignalsStatus {
   declared,
 }
 
-/// Source of the age declaration (iOS only).
+/// Method by which Apple obtained or verified the user's age range (iOS only).
+///
+/// In iOS 26.0 and 26.1, only [selfDeclared] and [guardianDeclared] are
+/// returned. iOS 26.2+ adds six additional cases representing stronger
+/// verification methods (government ID check, payment check, and their
+/// guardian variants), which are relevant for jurisdictions whose age
+/// assurance laws require more than a simple declaration.
 enum AgeDeclarationSource {
-  /// Age was self-declared by the user.
+  /// Age was self-declared by the user in their Apple ID.
   selfDeclared,
 
-  /// Age was declared by a guardian in Family Sharing.
+  /// Age was declared by a guardian via Family Sharing.
   guardianDeclared,
+
+  /// Apple verified the user's age via a non-standard method (iOS 26.2+).
+  checkedByOtherMethod,
+
+  /// Apple verified the guardian's age via a non-standard method (iOS 26.2+).
+  guardianCheckedByOtherMethod,
+
+  /// Apple verified the user's age against a government-issued ID (iOS 26.2+).
+  governmentIDChecked,
+
+  /// Apple verified the guardian's age against a government-issued ID (iOS 26.2+).
+  guardianGovernmentIDChecked,
+
+  /// Apple verified the user's age via a payment method (iOS 26.2+).
+  paymentChecked,
+
+  /// Apple verified the guardian's age via a payment method (iOS 26.2+).
+  guardianPaymentChecked,
 }

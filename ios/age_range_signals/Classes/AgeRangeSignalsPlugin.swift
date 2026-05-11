@@ -139,13 +139,24 @@ public class AgeRangeSignalsPlugin: NSObject, FlutterPlugin {
 
                 case .sharing(let range):
                     let source: String?
-                    switch range.ageRangeDeclaration {
-                    case .selfDeclared:
-                        source = "selfDeclared"
-                    case .guardianDeclared:
-                        source = "guardianDeclared"
-                    default:
-                        source = nil
+                    if #available(iOS 26.2, *) {
+                        switch range.ageRangeDeclaration {
+                        case .selfDeclared:                 source = "selfDeclared"
+                        case .guardianDeclared:             source = "guardianDeclared"
+                        case .checkedByOtherMethod:         source = "checkedByOtherMethod"
+                        case .guardianCheckedByOtherMethod: source = "guardianCheckedByOtherMethod"
+                        case .governmentIDChecked:          source = "governmentIDChecked"
+                        case .guardianGovernmentIDChecked:  source = "guardianGovernmentIDChecked"
+                        case .paymentChecked:               source = "paymentChecked"
+                        case .guardianPaymentChecked:       source = "guardianPaymentChecked"
+                        @unknown default:                   source = nil
+                        }
+                    } else {
+                        switch range.ageRangeDeclaration {
+                        case .selfDeclared:     source = "selfDeclared"
+                        case .guardianDeclared: source = "guardianDeclared"
+                        @unknown default:       source = nil
+                        }
                     }
 
                     // Determine status based on highest configured age gate
